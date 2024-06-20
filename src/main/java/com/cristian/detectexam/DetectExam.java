@@ -54,8 +54,8 @@ public class DetectExam {
 
         rectangleProcessor.applyFiltersAndFindExternalRects();
         rectangleProcessor.organizeExternalRects();
-        List<Rect> detectedCells = rectangleProcessor.getTotalListRects();
-        Mat src = rectangleProcessor.getSrc();
+        List<Rect> detectedCells = rectangleProcessor.getFinalListRects();
+        Mat src = rectangleProcessor.getSourceImageMat();
 
         Circle circleProcessor = new Circle();
         circleProcessor.detectCircles(src, detectedCells);

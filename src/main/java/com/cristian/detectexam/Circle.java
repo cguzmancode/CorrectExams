@@ -1,6 +1,5 @@
 package com.cristian.detectexam;
 
-import org.opencv.core.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -11,7 +10,6 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.highgui.HighGui;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 class Circle {
@@ -267,6 +265,7 @@ class Circle {
         }
     }
 
+    //Debugging method ,actually doesnt work
     public void drawCircles(Mat subMat, Mat circles, List<Character> answeredQuestion) {
         char[] letterAnswers = {'A', 'B', 'C', 'D'};
         int letterIndex = 0;
