@@ -15,30 +15,23 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 class Circle {
-
-    private final List<Pair<Double, Integer>> circlesOrdered;
+ 
+    private final List<Pair<Double, Integer>> CIRCLES_ORDERED;
+    private static final double MIN_DISTANCE = 25.0;
     private int rectIndex;
 
     private int numberToChar;
     private final List<Character> answersList;
 
-    public int getNumberOfLetter() {
-        return numberToChar;
-    }
-
-    public List<Character> getAnswersList() {
-        return answersList;
-    }
-
     public Circle() {
-        this.circlesOrdered = new ArrayList<>();
+        this.CIRCLES_ORDERED = new ArrayList<>();
         this.answersList = new ArrayList<>();
     }
 
     public void detectCircles(Mat src, List<Rect> orderedListRects) {
-        
+
         for (Rect rect : orderedListRects) {
-            circlesOrdered.clear();
+            CIRCLES_ORDERED.clear();
             Mat subMat = src.submat(rect);
             Mat gray = new Mat();
             Imgproc.cvtColor(subMat, gray, Imgproc.COLOR_BGR2GRAY);
@@ -49,37 +42,36 @@ class Circle {
             Mat circles = new Mat();
             Imgproc.HoughCircles(blurred, circles, Imgproc.HOUGH_GRADIENT, 1.0, (double) blurred.rows() / 50, 150.0, 30.0, 15, 20);
 
-            double minDistance = 25;
             for (int x = 0; x < circles.cols(); x++) {
-                double[] c = circles.get(0, x);
-                if (c == null) {
+                double[] circleData = circles.get(0, x);
+                if (circleData == null) {
                     continue;
                 }
-                double xCoordinate = c[0];
-                double yCoordinate = c[1];
+                double currentX = circleData[0];
+                double currentY = circleData[1];
 
-                boolean isDuplicate = false;
-                for (Pair<Double, Integer> pair : circlesOrdered) {
-                    double existingX = circles.get(0, pair.getRight())[0];
-                    double existingY = circles.get(0, pair.getRight())[1];
-
-                    double distance = Math.sqrt(Math.pow(xCoordinate - existingX, 2) + Math.pow(yCoordinate - existingY, 2));
-                    if (distance < minDistance) {
-                        isDuplicate = true;
-                        break;
-                    }
+                if (!isDuplicate(currentX, currentY, CIRCLES_ORDERED, circles)) {
+                    CIRCLES_ORDERED.add(Pair.of(currentX, x));
                 }
-
-                if (!isDuplicate) {
-                    circlesOrdered.add(Pair.of(xCoordinate, x));
-                }
-
             }
 
-            organizeCirclesByType(subMat, circles, circlesOrdered, rectIndex);
+            organizeCirclesByType(subMat, circles, CIRCLES_ORDERED, rectIndex);
             rectIndex++;
 
         }
+    }
+
+    public boolean isDuplicate(double currentX, double currentY, List<Pair<Double, Integer>> circlesOrdered, Mat circles) {
+        for (Pair<Double, Integer> pair : circlesOrdered) {
+            double storedX = circles.get(0, pair.getRight())[0];
+            double storedY = circles.get(0, pair.getRight())[1];
+
+            double distance = Math.sqrt(Math.pow(currentX - storedX, 2) + Math.pow(currentY - storedY, 2));
+            if (distance < MIN_DISTANCE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void organizeCirclesByType(Mat subMat, Mat circles, List<Pair<Double, Integer>> circlesOrdered, int rectIndex) {
@@ -281,7 +273,7 @@ class Circle {
         char[] letterAnswers = {'A', 'B', 'C', 'D'};
         int letterIndex = 0;
 
-        for (Pair<Double, Integer> pair : circlesOrdered) {
+        for (Pair<Double, Integer> pair : CIRCLES_ORDERED) {
             if (pair.getRight() >= circles.cols()) {
                 continue;
             }
@@ -310,6 +302,14 @@ class Circle {
             HighGui.waitKey();
         }
 
+    }
+
+    public int getNumberOfLetter() {
+        return numberToChar;
+    }
+
+    public List<Character> getAnswersList() {
+        return answersList;
     }
 
 }

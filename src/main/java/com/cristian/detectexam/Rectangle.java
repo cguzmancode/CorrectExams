@@ -11,15 +11,12 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 public class Rectangle {
 
-    private Mat src;
+    private final Mat src;
     private List<Rect> detectedListIdColumns;
     private List<Rect> sortedListCells;
     private List<Rect> detectedListExternalRects;
     private List<Rect> totalListRects;
 
-    public void setTotalListRects(List<Rect> totalListRects) {
-        this.totalListRects = totalListRects;
-    }
 
     public Rectangle(String imageUrl) {
         this.src = Imgcodecs.imread(imageUrl);
@@ -194,6 +191,10 @@ public class Rectangle {
 
     public List<Rect> getTotalListRects() {
         return totalListRects;
+    }
+    
+    public void setTotalListRects(List<Rect> totalListRects) {
+        this.totalListRects = totalListRects;
     }
 
     public Mat getSrc() {
