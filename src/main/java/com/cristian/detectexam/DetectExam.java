@@ -31,7 +31,6 @@ public class DetectExam {
     public static String idStudent;
     public static String idExam;
     public static double score;
-    private static boolean start;
     private static List<Integer> numbersOfIdentification = new ArrayList<>();
     private static List<Integer> numbersOfExam = new ArrayList<>();
     private static List<Character> detectedAnswers = new ArrayList<>();
@@ -43,7 +42,7 @@ public class DetectExam {
     }
 
     private static void start() throws IOException {
-        String examFile2 = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\ExamenPruebaNie.jpg";
+        String examFile2 = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\ExamenPruebaDni.jpg";
         String urlCsv = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\dataFromStudents2.csv";
 
         Rectangle rectangleProcessor = new Rectangle(examFile2);
@@ -53,7 +52,6 @@ public class DetectExam {
         }
 
         rectangleProcessor.applyFiltersAndFindExternalRects();
-        rectangleProcessor.organizeExternalRects();
         List<Rect> detectedCells = rectangleProcessor.getFinalListRects();
         Mat src = rectangleProcessor.getSourceImageMat();
 
@@ -260,13 +258,13 @@ public class DetectExam {
         DetectExam.score = score;
     }
 
-    public static boolean isStart() {
-        return start;
-    }
-
-    public static void setStart(boolean start) {
-        DetectExam.start = start;
-    }
+//    public static boolean isStart() {
+//        return start;
+//    }
+//
+//    public static void setStart(boolean start) {
+//        DetectExam.start = start;
+//    }
 
     public static List<Integer> getNumbersOfIdentification() {
         return numbersOfIdentification;

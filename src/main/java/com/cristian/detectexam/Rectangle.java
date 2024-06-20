@@ -39,7 +39,6 @@ public class Rectangle {
         Imgproc.medianBlur(srcWithFilters, srcWithFilters, 3);
         Imgproc.adaptiveThreshold(srcWithFilters, srcWithFilters, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 11, 1);
         Imgproc.Canny(srcWithFilters, srcWithFilters, 50, 150);
-        Imgcodecs.imwrite("I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\canny.jpg", srcWithFilters);
 
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
@@ -62,6 +61,8 @@ public class Rectangle {
             System.out.println("Error: La imagen no se ha tomado adecuadamente. Haz otra foto.");
             System.exit(0);
         }
+        
+        organizeExternalRects();
     }
 
     public void organizeExternalRects() {
@@ -181,8 +182,7 @@ public class Rectangle {
         for (int i = 0; i < sortedListRects.size(); i++) {
             Rect rect = sortedListRects.get(i);
             Imgproc.rectangle(SOURCE_IMAGE_MAT, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255), 2);
-            Imgproc.putText(SOURCE_IMAGE_MAT, String.valueOf(i + 1), new Point(rect.x, rect.y - 5), Imgproc.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(0, 0, 255), 2);
-            Imgcodecs.imwrite("I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\respuestas\\rect" + (i + 1) + ".jpg", SOURCE_IMAGE_MAT);
+            Imgproc.putText(SOURCE_IMAGE_MAT, String.valueOf(i + 1), new Point(rect.x, rect.y - 5), Imgproc.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(0, 0, 255), 2); 
         }
         HighGui.imshow("rectangulos detectados", SOURCE_IMAGE_MAT);
         HighGui.waitKey();
