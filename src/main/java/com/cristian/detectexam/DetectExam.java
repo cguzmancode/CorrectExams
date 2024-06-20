@@ -60,7 +60,6 @@ public class DetectExam {
         Circle circleProcessor = new Circle();
         circleProcessor.detectCircles(src, detectedCells);
 
-        setDetectedAnswers(circleProcessor.getAnswersList());
         List<Character> correctAnswers = Arrays.asList('A', 'B', 'C', 'D', 'N', 'A', 'N', 'D', 'C', 'A', 'A', 'B', 'C', 'D','C', 'B', 'A', 'N', 'C', 'D', 'C', 'B', 'A', 'B', 'C', 'D', 'C', 'B','A', 'B', 'N', 'C', 'D', 'B', 'B', 'C', 'D', 'A', 'C', 'B');
         setScore(calculateScore(detectedAnswers, correctAnswers));
         setIdStudentDni(listToString(numbersOfIdentification) + String.valueOf(numberToChar(numberToDniLetter)));

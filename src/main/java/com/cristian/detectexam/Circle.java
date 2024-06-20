@@ -15,23 +15,22 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 class Circle {
- 
-    private final List<Pair<Double, Integer>> CIRCLES_ORDERED;
+
+    private final List<Pair<Double, Integer>> CIRCLES_ORDERED_LIST;
+    private final List<Character> ANSWERS_DETECTED_LIST;
     private static final double MIN_DISTANCE = 25.0;
     private int rectIndex;
-
     private int numberToChar;
-    private final List<Character> answersList;
 
     public Circle() {
-        this.CIRCLES_ORDERED = new ArrayList<>();
-        this.answersList = new ArrayList<>();
+        this.CIRCLES_ORDERED_LIST = new ArrayList<>();
+        this.ANSWERS_DETECTED_LIST = new ArrayList<>();
     }
 
     public void detectCircles(Mat src, List<Rect> orderedListRects) {
 
         for (Rect rect : orderedListRects) {
-            CIRCLES_ORDERED.clear();
+            CIRCLES_ORDERED_LIST.clear();
             Mat subMat = src.submat(rect);
             Mat gray = new Mat();
             Imgproc.cvtColor(subMat, gray, Imgproc.COLOR_BGR2GRAY);
@@ -50,14 +49,13 @@ class Circle {
                 double currentX = circleData[0];
                 double currentY = circleData[1];
 
-                if (!isDuplicate(currentX, currentY, CIRCLES_ORDERED, circles)) {
-                    CIRCLES_ORDERED.add(Pair.of(currentX, x));
+                if (!isDuplicate(currentX, currentY, CIRCLES_ORDERED_LIST, circles)) {
+                    CIRCLES_ORDERED_LIST.add(Pair.of(currentX, x));
                 }
             }
 
-            organizeCirclesByType(subMat, circles, CIRCLES_ORDERED, rectIndex);
+            organizeCirclesByType(subMat, circles, CIRCLES_ORDERED_LIST, rectIndex);
             rectIndex++;
-
         }
     }
 
@@ -76,7 +74,7 @@ class Circle {
 
     private void organizeCirclesByType(Mat subMat, Mat circles, List<Pair<Double, Integer>> circlesOrdered, int rectIndex) {
         int totalCircles = circlesOrdered.size();
-        int threshold = 2;
+        int coordinateDifferenceThreshold = 2;
         switch (totalCircles) {
 
             case 4:
@@ -85,13 +83,13 @@ class Circle {
                     public int compare(Pair<Double, Integer> p1, Pair<Double, Integer> p2) {
                         double x1 = circles.get(0, p1.getRight())[0];
                         double x2 = circles.get(0, p2.getRight())[0];
-                        if (Math.abs(x1 - x2) > threshold) {
+                        if (Math.abs(x1 - x2) > coordinateDifferenceThreshold) {
                             return Double.compare(x1, x2);
                         }
                         return Integer.compare(p1.getRight(), p2.getRight());
                     }
                 });
-                detectAnswersQuestions(subMat, circles, circlesOrdered);
+                detectAnswersFromExam(subMat, circles, circlesOrdered);
                 break;
             case 26:
                 circlesOrdered.sort(new Comparator<Pair<Double, Integer>>() {
@@ -99,7 +97,7 @@ class Circle {
                     public int compare(Pair<Double, Integer> p1, Pair<Double, Integer> p2) {
                         double y1 = circles.get(0, p1.getRight())[1];
                         double y2 = circles.get(0, p2.getRight())[1];
-                        if (Math.abs(y1 - y2) > threshold) {
+                        if (Math.abs(y1 - y2) > coordinateDifferenceThreshold) {
                             return Double.compare(y1, y2);
                         } else {
                             double x1 = circles.get(0, p1.getRight())[0];
@@ -108,7 +106,7 @@ class Circle {
                         }
                     }
                 });
-                detectAnswersToAlphabet(subMat, circles, circlesOrdered, rectIndex);
+                detectAndSetIdLetter(subMat, circles, circlesOrdered, rectIndex);
                 break;
             case 30:
                 circlesOrdered.sort(new Comparator<Pair<Double, Integer>>() {
@@ -116,7 +114,7 @@ class Circle {
                     public int compare(Pair<Double, Integer> p1, Pair<Double, Integer> p2) {
                         double x1 = circles.get(0, p1.getRight())[0];
                         double x2 = circles.get(0, p2.getRight())[0];
-                        if (Math.abs(x1 - x2) > threshold) {
+                        if (Math.abs(x1 - x2) > coordinateDifferenceThreshold) {
                             return Double.compare(x1, x2);
                         } else {
                             double y1 = circles.get(0, p1.getRight())[1];
@@ -125,7 +123,7 @@ class Circle {
                         }
                     }
                 });
-                detectAnswers(subMat, circles, circlesOrdered, 0);
+                classifyAndDetectAnswers(subMat, circles, circlesOrdered, rectIndex);
                 break;
             case 80:
                 circlesOrdered.sort(new Comparator<Pair<Double, Integer>>() {
@@ -133,7 +131,7 @@ class Circle {
                     public int compare(Pair<Double, Integer> p1, Pair<Double, Integer> p2) {
                         double x1 = circles.get(0, p1.getRight())[0];
                         double x2 = circles.get(0, p2.getRight())[0];
-                        if (Math.abs(x1 - x2) > threshold) {
+                        if (Math.abs(x1 - x2) > coordinateDifferenceThreshold) {
                             return Double.compare(x1, x2);
                         } else {
                             double y1 = circles.get(0, p1.getRight())[1];
@@ -142,7 +140,7 @@ class Circle {
                         }
                     }
                 });
-                detectAnswers(subMat, circles, circlesOrdered, 1);
+                classifyAndDetectAnswers(subMat, circles, circlesOrdered, rectIndex);
                 break;
             default:
                 System.out.println("Número de círculos no manejado en " + rectIndex + ": " + totalCircles);
@@ -150,7 +148,7 @@ class Circle {
         }
     }
 
-    public List<Character> detectAnswersQuestions(Mat subMat, Mat circles, List<Pair<Double, Integer>> circlesOrdered) {
+    public void detectAnswersFromExam(Mat subMat, Mat circles, List<Pair<Double, Integer>> circlesOrdered) {
         char[] letterAnswers = {'A', 'B', 'C', 'D'};
         int letterIndex = 0;
         List<Character> answeredQuestion = new ArrayList<>();
@@ -183,20 +181,19 @@ class Circle {
         }
 
         if (answeredQuestion.isEmpty()) {
-            answersList.add('N');
+            ANSWERS_DETECTED_LIST.add('N');
         } else if (answeredQuestion.size() == 1) {
-            answersList.add(answeredQuestion.get(0));
+            ANSWERS_DETECTED_LIST.add(answeredQuestion.get(0));
         } else if (answeredQuestion.size() == 2) {
-            answersList.add('N');
+            ANSWERS_DETECTED_LIST.add('N');
         } else if (answeredQuestion.size() > 2) {
-            answersList.add('N');
+            ANSWERS_DETECTED_LIST.add('N');
         }
-
-        return answeredQuestion;
-
+        
+        DetectExam.setDetectedAnswers(ANSWERS_DETECTED_LIST);
     }
 
-    public void detectAnswersToAlphabet(Mat subMat, Mat circles, List<Pair<Double, Integer>> circlesOrdered, int flag) {
+    public void detectAndSetIdLetter(Mat subMat, Mat circles, List<Pair<Double, Integer>> circlesOrdered, int rectIndex) {
         int counter = 0;
 
         for (Pair<Double, Integer> pair : circlesOrdered) {
@@ -215,7 +212,7 @@ class Circle {
             numberToChar = counter + 1;
 
             if (mean.val[0] < 200) {
-                if (flag == 0) {
+                if (rectIndex == 0) {
                     DetectExam.setNumberToNieLetter(numberToChar);
                 } else {
                     DetectExam.setNumberToDniLetter(numberToChar);
@@ -230,7 +227,7 @@ class Circle {
         }
     }
 
-    public void detectAnswers(Mat subMat, Mat circles, List<Pair<Double, Integer>> circlesOrdered, int flag) {
+    public void classifyAndDetectAnswers(Mat subMat, Mat circles, List<Pair<Double, Integer>> circlesOrdered, int rectIndex) {
 
         List<Integer> foundNumbers = new ArrayList<>();
 
@@ -253,10 +250,11 @@ class Circle {
 
                 if (mean.val[0] < 200) {
                     foundNumbers.add(counter);
-                    if (flag == 0) {
-                        DetectExam.setNumbersOfExam(foundNumbers);
-                    } else {
+                    if (rectIndex < 2) {
                         DetectExam.setNumbersOfIdentification(foundNumbers);
+
+                    } else {
+                        DetectExam.setNumbersOfExam(foundNumbers);
                     }
 
                     Imgproc.circle(subMat, center, radius, new Scalar(0, 255, 0), 3, 8, 0);
@@ -273,7 +271,7 @@ class Circle {
         char[] letterAnswers = {'A', 'B', 'C', 'D'};
         int letterIndex = 0;
 
-        for (Pair<Double, Integer> pair : CIRCLES_ORDERED) {
+        for (Pair<Double, Integer> pair : CIRCLES_ORDERED_LIST) {
             if (pair.getRight() >= circles.cols()) {
                 continue;
             }
@@ -303,13 +301,4 @@ class Circle {
         }
 
     }
-
-    public int getNumberOfLetter() {
-        return numberToChar;
-    }
-
-    public List<Character> getAnswersList() {
-        return answersList;
-    }
-
 }
