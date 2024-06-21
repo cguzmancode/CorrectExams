@@ -34,7 +34,6 @@ public class DetectExam {
     private static List<Integer> numbersOfIdentification = new ArrayList<>();
     private static List<Integer> numbersOfExam = new ArrayList<>();
     private static List<Character> detectedAnswers = new ArrayList<>();
-    //private  WindowExam windowExam = WindowExam.getInstance();
 
     public static void main(String[] args) throws IOException {
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
@@ -42,10 +41,9 @@ public class DetectExam {
     }
 
     private static void start() throws IOException {
-        String examFile2 = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\ExamenPruebaDni.jpg";
         String urlCsv = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\dataFromStudents2.csv";
 
-        Rectangle rectangleProcessor = new Rectangle(examFile2);
+        Rectangle rectangleProcessor = new Rectangle(examFile);
 
         if (!rectangleProcessor.loadImage()) {
             return;
@@ -67,7 +65,6 @@ public class DetectExam {
     }
 
     private static double calculateScore(List<Character> detectedAnswers, List<Character> correctAnswers) {
-        double score = 0.0;
 
         for (int i = 0; i < detectedAnswers.size(); i++) {
             char detected = detectedAnswers.get(i);
@@ -257,14 +254,6 @@ public class DetectExam {
     public static void setScore(double score) {
         DetectExam.score = score;
     }
-
-//    public static boolean isStart() {
-//        return start;
-//    }
-//
-//    public static void setStart(boolean start) {
-//        DetectExam.start = start;
-//    }
 
     public static List<Integer> getNumbersOfIdentification() {
         return numbersOfIdentification;

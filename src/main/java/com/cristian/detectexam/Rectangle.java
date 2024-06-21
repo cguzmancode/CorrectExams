@@ -20,9 +20,9 @@ public class Rectangle {
     public Rectangle(String imageUrl) {
         this.SOURCE_IMAGE_MAT = Imgcodecs.imread(imageUrl);
         this.DETECTED_LIST_ID_RECTS = new ArrayList<>();
+        this.FINAL_LIST_RECTS = new ArrayList<>();
         this.sortedListCells = new ArrayList<>();
         this.detectedListExternalRects = new ArrayList<>();
-        this.FINAL_LIST_RECTS = new ArrayList<>();
     }
 
     public boolean loadImage() {
