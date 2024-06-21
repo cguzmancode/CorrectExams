@@ -42,7 +42,7 @@ public class DetectExam {
     }
 
     private static void start() throws IOException {
-        String examFile = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\ExamenPruebaNie.jpg";
+//        String examFile = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\ExamenPruebaNie.jpg";
         String urlCsv = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\dataFromStudents2.csv";
 
         Rectangle rectangleProcessor = new Rectangle(examFile);
