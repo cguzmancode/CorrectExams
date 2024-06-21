@@ -10,6 +10,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.highgui.HighGui;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 class Circle {
@@ -53,6 +54,9 @@ class Circle {
             }
 
             organizeCirclesByType(subMat, circles, CIRCLES_ORDERED_LIST, rectIndex);
+            
+            // Guardar la imagen después de dibujar los círculos
+            Imgcodecs.imwrite("I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\examenDetectado.jpg", src);
             rectIndex++;
         }
     }
@@ -170,6 +174,7 @@ class Circle {
 
             if (mean.val[0] < 200) {
                 answeredQuestion.add(letterAnswer);
+                Imgproc.circle(subMat, center, radius, new Scalar(0, 255, 0), 3, 8, 0);
             }
 
             letterIndex++;
@@ -217,10 +222,7 @@ class Circle {
 
                 }
                 Imgproc.circle(subMat, center, radius, new Scalar(0, 255, 0), 3, 8, 0);
-                Imgproc.putText(subMat, String.valueOf(counter + 1), new Point(center.x - radius, center.y), Core.Formatter_FMT_DEFAULT, 0.5, new Scalar(0, 0, 255), 2);
-            } else {
-                Imgproc.circle(subMat, center, radius, new Scalar(255, 0, 255), 3, 8, 0);
-            }
+            } 
             counter++;
         }
     }
@@ -256,9 +258,6 @@ class Circle {
                     }
 
                     Imgproc.circle(subMat, center, radius, new Scalar(0, 255, 0), 3, 8, 0);
-                    Imgproc.putText(subMat, String.valueOf(counter), new Point(center.x - radius, center.y), Core.Formatter_FMT_DEFAULT, 0.5, new Scalar(0, 0, 255), 2);
-                } else {
-                    Imgproc.circle(subMat, center, radius, new Scalar(255, 0, 255), 3, 8, 0);
                 }
                 counter++;
             }
@@ -286,10 +285,7 @@ class Circle {
 
             if (answeredQuestion.contains(letterAnswer)) {
                 Imgproc.circle(subMat, center, radius, new Scalar(0, 255, 0), 3, 8, 0);
-            } else {
-                Imgproc.circle(subMat, center, radius, new Scalar(255, 0, 255), 3, 8, 0);
             }
-
             letterIndex++;
             if (letterIndex >= 4) {
                 letterIndex = 0;

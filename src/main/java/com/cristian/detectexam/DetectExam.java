@@ -35,12 +35,14 @@ public class DetectExam {
     private static List<Integer> numbersOfExam = new ArrayList<>();
     private static List<Character> detectedAnswers = new ArrayList<>();
 
+
     public static void main(String[] args) throws IOException {
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
         start();
     }
 
     private static void start() throws IOException {
+        String examFile = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\ExamenPruebaNie.jpg";
         String urlCsv = "I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\dataFromStudents2.csv";
 
         Rectangle rectangleProcessor = new Rectangle(examFile);
@@ -65,7 +67,6 @@ public class DetectExam {
     }
 
     private static double calculateScore(List<Character> detectedAnswers, List<Character> correctAnswers) {
-
         for (int i = 0; i < detectedAnswers.size(); i++) {
             char detected = detectedAnswers.get(i);
             char correct = correctAnswers.get(i);
