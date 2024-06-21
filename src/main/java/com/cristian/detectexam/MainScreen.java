@@ -10,7 +10,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MainScreen extends javax.swing.JFrame {
 
-    private DetectExam detectExam;
     private static MainScreen instance;
 
     public MainScreen() {
@@ -56,7 +55,6 @@ public class MainScreen extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(960, 867));
         setMinimumSize(new java.awt.Dimension(960, 867));
-        setPreferredSize(new java.awt.Dimension(960, 867));
         setSize(new java.awt.Dimension(960, 867));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -174,6 +172,7 @@ public class MainScreen extends javax.swing.JFrame {
                     try {
                         DetectExam.main(null);
                         setInfoExam();
+                        displayImage(new File("I:\\FPDAM\\PRACTICAS_EMPRESA\\recursosOpencv\\examenDetectado.jpg"), 0);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -237,15 +236,19 @@ public class MainScreen extends javax.swing.JFrame {
         try {
             ImageIcon originalIcon = new ImageIcon(file.getAbsolutePath());
             Image originalImage = originalIcon.getImage();
-            System.out.println("urlImagen= " + file.getAbsolutePath());
+            
 
-            DetectExam.setExamFile(file.getAbsolutePath());
+            
             int labelWidth = visorImageExam.getWidth();
             int labelHeight = visorImageExam.getHeight();
 
             Image scaledImage = originalImage.getScaledInstance(labelWidth, labelHeight, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             visorImageExam.setIcon(scaledIcon);
+            if(flag == 0){
+               DetectExam.setExamFile(file.getAbsolutePath()); 
+               System.out.println("urlImagen= " + file.getAbsolutePath());
+            }
 
         } catch (Exception ex) {
             ex.printStackTrace();
